@@ -1,0 +1,26 @@
+{
+  "name": "ant",
+  "version": "1.0.0",
+  "description": "A professional stock management system built with Node.js and Express.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/milshanfernando/ant.git"
+  },
+  "keywords": [
+    "stock",
+    "inventory",
+    "management",
+    "node",
+    "express"
+  ],
+  "author": "Milshan Fernando",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/milshanfernando/ant/issues"
+  },
+  "homepage": "https://github.com/milshanfernando/ant#readme"
+}
