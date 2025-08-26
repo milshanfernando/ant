@@ -1,19 +1,17 @@
 const express = require("express");
 const morgan = require("morgan");
 const config = require("./config");
-const itemController = require("../controllers/item.controller");
+const apiRoutes = require("../routes/api");
+const errorHandler = require("../middlewares/errorHandler.middleware");
 const app = express();
 
 app.use(morgan("combined"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.get("/", (req, res) => {
-  //   return res.send("Hello! You have connected with Ant app.");
-  return res.json({ message: "Hello! You have connected with Ant app." });
-});
+app.use("/api", apiRoutes);
 
-app.post("/items", itemController.create);
+app.use(errorHandler.handleError);
 
 exports.start = () => {
   app.listen(config.port, (err) => {
