@@ -1,11 +1,11 @@
 const Item = require("../models/item.model");
-const httpStatus = require("http-status");
+
 exports.create = async (req, res, next) => {
   try {
     const itemData = req.body;
     const item = new Item(itemData);
     await item.save();
-    return res.status(httpStatus.CREATED).json({ item });
+    return res.status(201).json({ item });
   } catch (error) {
     next(error);
   }
