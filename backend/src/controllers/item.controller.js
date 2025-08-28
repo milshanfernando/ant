@@ -27,3 +27,35 @@ exports.view = async (req, res, next) => {
     next(error);
   }
 };
+
+exports.list = async (req, res, next) => {
+  try {
+    const { sortBy = "category", order = "desc" } = req.query;
+    const query = Item.find({})
+      .sort({ [sortBy]: order })
+      .select("-__v");
+
+    const items = await query.exec();
+
+    return res.status(200).json({ items });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.search = async (req, res, next) => {
+  try {
+    const { searchBy = "name", searchKey } = req.query;
+    if (!searchKey) {
+      return res.status(400).json({ message: "Search keywords are required " });
+    }
+
+    const items = await Item.find({
+      [searchBy]: { $regex: searchKey, $options: "i" },
+    }).select("-__v");
+
+    return res.status(200).json({ items });
+  } catch (error) {
+    next(error);
+  }
+};
