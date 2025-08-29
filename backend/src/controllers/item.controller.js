@@ -16,7 +16,9 @@ exports.view = async (req, res, next) => {
     const { id } = req.params;
     console.log(id);
 
-    const item = await Item.findById(id).select("-__v");
+    const item = await Item.findById(id).select(
+      "-lastUpdated -createdAt -updatedAt -__v"
+    );
 
     if (!item) {
       return res.status(404).json({ message: "Item not found" });
@@ -30,10 +32,22 @@ exports.view = async (req, res, next) => {
 
 exports.list = async (req, res, next) => {
   try {
-    const { sortBy = "category", order = "desc" } = req.query;
+    const {
+      sortBy = "category",
+      order = "desc",
+      _start = 0,
+      _limit = 10,
+    } = req.query;
+
+    // Convert _start and _limit to numbers
+    const start = parseInt(_start, 10);
+    const limit = parseInt(_limit, 10);
+
     const query = Item.find({})
       .sort({ [sortBy]: order })
-      .select("-__v");
+      .skip(start)
+      .limit(limit)
+      .select("-lastUpdated -createdAt -updatedAt -__v");
 
     const items = await query.exec();
 

@@ -1,10 +1,12 @@
 const express = require("express");
 const morgan = require("morgan");
 const config = require("./config");
+const cors = require("cors");
 const apiRoutes = require("../routes/api");
 const errorHandler = require("../middlewares/errorHandler.middleware");
 const app = express();
 
+app.use(cors());
 app.use(morgan("combined"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
