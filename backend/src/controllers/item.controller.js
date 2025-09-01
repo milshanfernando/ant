@@ -1,11 +1,51 @@
 const Item = require("../models/item.model");
+const config = require("../services/config");
+const cloudinary = require("cloudinary").v2;
+
+cloudinary.config({
+  cloud_name: config.cloudName,
+  api_key: config.apiKey,
+  api_secret: config.apiSecret,
+});
 
 exports.create = async (req, res, next) => {
   try {
-    const itemData = req.body;
-    const item = new Item(itemData);
+    const { name, price, category, quantity, supplier, status } = req.body;
+
+    let imageUrl = "";
+    if (req.file) {
+      // upload to cloudinary
+      const result = await new Promise((resolve, reject) => {
+        cloudinary.uploader
+          .upload_stream({ folder: "items" }, (error, result) => {
+            if (error) reject(error);
+            else resolve(result);
+          })
+          .end(req.file.buffer);
+      });
+
+      imageUrl = result.secure_url;
+    }
+
+    // create item with image URL
+    const item = new Item({
+      name,
+      price,
+      category,
+      quantity,
+      supplier,
+      status,
+      image: imageUrl, // field in your schema
+    });
+
     await item.save();
-    return res.status(201).json({ item });
+    return res.status(201).json({
+      _id: item._id,
+      name: item.name,
+      image: item.image,
+      quantity: item.quantity,
+      status: item.status,
+    });
   } catch (error) {
     next(error);
   }
@@ -47,7 +87,7 @@ exports.list = async (req, res, next) => {
       .sort({ [sortBy]: order })
       .skip(start)
       .limit(limit)
-      .select("-lastUpdated -createdAt -updatedAt -__v");
+      .select("name image quantity status");
 
     const items = await query.exec();
 
