@@ -1,8 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
-import { BASE_URL } from "../config";
 import type { Item } from "../types/item";
-import type { ItemsResponse } from "../types/itemRes";
+import ApiClient from "../services/apiClient";
+
+const apiClient = new ApiClient<Item>("/items/list");
 
 interface ItemQuery {
   page?: number;
@@ -10,21 +10,9 @@ interface ItemQuery {
 }
 
 const UseItems = (quary: ItemQuery) => {
-  const fetchItems = () =>
-    axios
-      .get<ItemsResponse>(`${BASE_URL}/items/list`, {
-        params: {
-          _start: quary.page
-            ? (quary.page - 1) * (quary.pageSize || 6)
-            : undefined,
-          _limit: quary.pageSize,
-        },
-      })
-      .then((res) => res.data.items);
-
-  return useQuery<Item[]>({
+  return useQuery<Item[], Error>({
     queryKey: quary ? ["items", quary] : ["items"],
-    queryFn: fetchItems,
+    queryFn: () => apiClient.getAll(quary.page, quary.pageSize),
     placeholderData: (prevData) => prevData,
   });
 };

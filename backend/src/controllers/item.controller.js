@@ -91,7 +91,7 @@ exports.list = async (req, res, next) => {
 
     const items = await query.exec();
 
-    return res.status(200).json({ items });
+    return res.status(200).json(items);
   } catch (error) {
     next(error);
   }

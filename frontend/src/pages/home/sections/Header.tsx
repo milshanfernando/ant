@@ -1,5 +1,5 @@
-import SearchField from "../../../components/SearchField";
-import Tag from "../../../components/Tag";
+import SearchField from "../../../components/ui/SearchField";
+import Tag from "../../../components/ui/Tag";
 
 const Header = () => {
   return (

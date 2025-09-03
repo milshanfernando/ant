@@ -1,23 +1,18 @@
-// import axios from "axios";
-// import { useMutation } from "@tanstack/react-query";
-// import { BASE_URL } from "../../config";
-import { useFormik } from "formik";
-import Select from "../Select";
+import Select from "../../components/ui/Select";
 import { categoryOptions, statusOptions } from "../../constants/data";
-import Input from "../Input";
-import Label from "../Label";
-import ImagePicker from "../ImagePicker";
-import FieldError from "../FieldError";
-import { ItemSchema } from "../../validations";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import Input from "../../components/ui/Input";
+import Label from "../../components/ui/Label";
+import ImagePicker from "../../components/ui/ImagePicker";
+import FieldError from "../../components/ui/FieldError";
 import type { Item } from "../../types/item";
-import axios from "axios";
-import { BASE_URL } from "../../config";
 import { useEffect, useRef, useState } from "react";
+import useAddItem from "../../hooks/useAddItem";
+import useCreateForm from "../../hooks/useCreateForm";
 
 const CreateForm = () => {
-  const queryClient = useQueryClient();
   const errorRef = useRef<HTMLDivElement>(null);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
   const {
     values,
     errors,
@@ -28,69 +23,36 @@ const CreateForm = () => {
     handleSubmit,
     resetForm,
     setFieldTouched,
-  } = useFormik({
-    initialValues: {
-      name: "",
-      price: 0,
-      category: "",
-      quantity: 0,
-      supplier: "",
-      status: "in-stock",
-      image: null,
-    },
-    validationSchema: ItemSchema,
-    onSubmit: (values: Item) => {
-      // handle form submission
-      console.log(values);
-      mutate(values);
-    },
+  } = useCreateForm((val: Item) => {
+    mutate(val);
   });
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const { mutate, error, isPending } = useMutation<Item, Error, Item>({
-    mutationFn: async (item: Item) => {
-      const formData = new FormData();
-      formData.append("name", item.name);
-      formData.append("price", item.price.toString());
-      formData.append("category", item.category);
-      formData.append("quantity", item.quantity.toString());
-      formData.append("supplier", item.supplier);
-      formData.append("status", item.status);
-      if (item.image) {
-        formData.append("image", item.image);
-      }
 
-      return axios.post(`${BASE_URL}/items/create2`, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["items"], exact: false });
+  const { mutate, error, isPending } = useAddItem(
+    () => {
       resetForm();
+      setErrorMsg(null);
     },
-    onError: (err) => {
-      setErrorMsg("Failed to add item. Please try again.");
-      console.log(err);
-
-      // hide after 5 minutes (300000 ms)
-      setTimeout(() => setErrorMsg(null), 5000);
-    },
-  });
+    (err: Error) => {
+      setErrorMsg(err.message);
+    }
+  );
 
   useEffect(() => {
     if (error && errorRef.current) {
       errorRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
-      // also move keyboard focus
       errorRef.current.focus();
     }
   }, [error]);
 
   return (
-    <div className=" p-5 border border-gray-900 dark:border-gray-800 rounded-lg shadow-sm flex flex-col gap-5">
+    // <div className=" p-5 border border-gray-900 dark:border-gray-800 rounded-lg shadow-sm flex flex-col gap-5">
+    <div className="flex flex-col gap-5 p-10">
       {error && (
         <div ref={errorRef} tabIndex={-1} className=" text-red-500 text-sm">
           {errorMsg}
         </div>
       )}
+
       <div>
         <h2 className="text-lg font-semibold mb-1">Add New Item</h2>
         <p className="text-sm text-gray-500">
