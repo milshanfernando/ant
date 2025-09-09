@@ -26,6 +26,17 @@ class ApiClient<T> {
       .then((res) => res.data);
   };
 
+  getSearchData = (search: string) => {
+    return axiosInstance
+      .get<T[]>(this.endpoint, {
+        params: {
+          searchBy: "name",
+          searchKey: search,
+        },
+      })
+      .then((res) => res.data);
+  };
+
   post = (data: T) => {
     return axiosInstance
       .post<T>(this.endpoint, data, {

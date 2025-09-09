@@ -2,6 +2,7 @@ import { createBrowserRouter } from "react-router-dom";
 import Home from "../pages/home/Home";
 import NewItem from "../pages/item/NewItem";
 import App from "../App";
+import Invoice from "../pages/invoice/Invoice";
 
 const router = createBrowserRouter([
   {
@@ -10,6 +11,7 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <Home /> },
       { path: "items/new", element: <NewItem /> },
+      { path: "billing/new-invoice", element: <Invoice /> },
     ],
   },
 ]);

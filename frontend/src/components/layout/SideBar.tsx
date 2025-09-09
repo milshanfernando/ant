@@ -18,6 +18,9 @@ const SideBar = () => {
         <NavLink to="/items/new" className={linkClass}>
           Add new item
         </NavLink>
+        <NavLink to="/billing/new-invoice" className={linkClass}>
+          New invoice
+        </NavLink>
       </nav>
     </aside>
   );

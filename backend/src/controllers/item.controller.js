@@ -106,9 +106,9 @@ exports.search = async (req, res, next) => {
 
     const items = await Item.find({
       [searchBy]: { $regex: searchKey, $options: "i" },
-    }).select("-__v");
+    }).select("_id name image quantity price status");
 
-    return res.status(200).json({ items });
+    return res.status(200).json(items);
   } catch (error) {
     next(error);
   }

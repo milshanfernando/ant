@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { RiArrowDropDownLine } from "react-icons/ri";
 
-type Option = { value: string; label: string };
+type Option = { value: string; label: string; id: string; image: string };
 
 type Props = {
   name: string;
@@ -12,7 +12,7 @@ type Props = {
   placeholder?: string;
 };
 
-const Select = ({
+const ItemSelect = ({
   name,
   value,
   onChange,
@@ -103,4 +103,4 @@ const Select = ({
   );
 };
 
-export default Select;
+export default ItemSelect;
