@@ -31,5 +31,7 @@ coverage/
 # Optional package managers
 .pnpm-debug.log*
 
+.ps1
+
 
 
