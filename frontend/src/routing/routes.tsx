@@ -3,6 +3,7 @@ import Home from "../pages/home/Home";
 import NewItem from "../pages/item/NewItem";
 import App from "../App";
 import Invoice from "../pages/invoice/Invoice";
+import Sales from "../pages/sales/Sales";
 
 const router = createBrowserRouter([
   {
@@ -12,6 +13,7 @@ const router = createBrowserRouter([
       { index: true, element: <Home /> },
       { path: "items/new", element: <NewItem /> },
       { path: "billing/new-invoice", element: <Invoice /> },
+      { path: "sales/overview", element: <Sales /> },
     ],
   },
 ]);

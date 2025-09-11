@@ -15,12 +15,28 @@ class ApiClient<T> {
     this.endpoint = endpoint;
   }
 
+  getAllByTimeRange = (quary: {
+    start?: string;
+    end?: string;
+    month?: string;
+  }) => {
+    return axiosInstance
+      .get<T[]>(this.endpoint, {
+        params: {
+          _start: quary.start ? quary.start : undefined,
+          _end: quary.end ? quary.end : undefined,
+          _month: quary.month ? quary.month : undefined,
+        },
+      })
+      .then((res) => res.data);
+  };
+
   getAll = (page?: number, pageSize?: number) => {
     return axiosInstance
       .get<T[]>(this.endpoint, {
         params: {
           _start: page ? (page - 1) * (pageSize || 6) : undefined,
-          _limit: pageSize,
+          _limit: pageSize ? pageSize : undefined,
         },
       })
       .then((res) => res.data);
@@ -38,11 +54,7 @@ class ApiClient<T> {
   };
 
   post = (data: T) => {
-    return axiosInstance
-      .post<T>(this.endpoint, data, {
-        headers: { "Content-Type": "multipart/form-data" },
-      })
-      .then((res) => res.data);
+    return axiosInstance.post<T>(this.endpoint, data).then((res) => res.data);
   };
 
   postFormData = (formData: FormData) => {

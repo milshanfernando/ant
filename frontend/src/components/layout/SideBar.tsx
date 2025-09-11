@@ -21,6 +21,9 @@ const SideBar = () => {
         <NavLink to="/billing/new-invoice" className={linkClass}>
           New invoice
         </NavLink>
+        <NavLink to="/sales/overview" className={linkClass}>
+          Sales overview
+        </NavLink>
       </nav>
     </aside>
   );

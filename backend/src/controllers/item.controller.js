@@ -79,7 +79,6 @@ exports.list = async (req, res, next) => {
       _limit = 10,
     } = req.query;
 
-    // Convert _start and _limit to numbers
     const start = parseInt(_start, 10);
     const limit = parseInt(_limit, 10);
 
