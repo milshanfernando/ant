@@ -11,3 +11,10 @@ export const statusOptions = [
   { value: "out-of-stock", label: "Out of Stock" },
   { value: "low-stock", label: "Low Stock" },
 ];
+
+export const paymentMethods = [
+  { value: "Cash", label: "Cash" },
+  { value: "Card", label: "Card" },
+  { value: "Credit", label: "Credit" },
+  { value: "Other", label: "Other" },
+];
