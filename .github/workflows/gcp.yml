@@ -14,6 +14,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
+      - name: Create .env file
+        run: |
+          echo "CLOUDINARY_CLOUD_NAME=${{ secrets.CLOUDINARY_CLOUD_NAME }}" >> .env
+          echo "CLOUDINARY_API_KEY=${{ secrets.CLOUDINARY_API_KEY }}" >> .env
+          echo "CLOUDINARY_API_SECRET=${{ secrets.CLOUDINARY_API_SECRET }}" >> .env
+          echo "PORT=${{ secrets.PORT }}" >> .env
+          echo "MONGO_URL=${{ secrets.MONGO_URL }}" >> .env
+
       - uses: google-github-actions/setup-gcloud@v1
         with:
           service_account_key: ${{ secrets.SERVICE_ACCOUNT_KEY }}
