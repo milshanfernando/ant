@@ -21,6 +21,7 @@ jobs:
           echo "CLOUDINARY_API_SECRET=${{ secrets.CLOUDINARY_API_SECRET }}" >> .env
           echo "PORT=${{ secrets.PORT }}" >> .env
           echo "MONGO_URL=${{ secrets.MONGO_URL }}" >> .env
+          echo "PROJECT_ID=${{ secrets.PROJECT_ID }}" >> .env
 
       - uses: google-github-actions/setup-gcloud@v1
         with:
