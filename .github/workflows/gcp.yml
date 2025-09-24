@@ -1,46 +1,41 @@
----
-name: Ant App
+name: Build and upload Docker image
+
 on:
   push:
-    branches: [main]
+    branches:
+      - main
+
+env:
+  REGION: asia-southeast1
+  PROJECT: ant-app-473121
+  REPO: main
+  IMAGE: ant-app
+
 jobs:
-  build-push-gcr:
-    name: Build and Push to GCP
+  build-push:
     runs-on: ubuntu-latest
-    env:
-      IMAGE_NAME: ant
-      PROJECT_ID: ant-app-473121
+
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-      - name: Create .env file
-        run: |
-          echo "CLOUDINARY_CLOUD_NAME=${{ secrets.CLOUDINARY_CLOUD_NAME }}" >> .env
-          echo "CLOUDINARY_API_KEY=${{ secrets.CLOUDINARY_API_KEY }}" >> .env
-          echo "CLOUDINARY_API_SECRET=${{ secrets.CLOUDINARY_API_SECRET }}" >> .env
-          echo "PORT=${{ secrets.PORT }}" >> .env
-          echo "MONGO_URL=${{ secrets.MONGO_URL }}" >> .env
-          echo "PROJECT_ID=${{ secrets.PROJECT_ID }}" >> .env
+      - name: Set var
+        run: echo "IMAGE_TAG=$REGION-docker.pkg.dev/$PROJECT/$REPO/$IMAGE" >> $GITHUB_ENV
 
-      - uses: google-github-actions/setup-gcloud@v1
+      - name: Google Cloud Auth
+        uses: google-github-actions/auth@v1
         with:
-          service_account_key: ${{ secrets.SERVICE_ACCOUNT_KEY }}
-          project_id: ${{ env.PROJECT_ID }}
-          export_default_credentials: true
+          credentials_json: "${{ secrets.GC_IMAGE_MANAGER_KEY }}"
 
-      - name: Build Docker Image
-        run: docker build -t $IMAGE_NAME:latest .
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
 
-      - name: Configure Docker Client
-        run: |-
-          gcloud auth configure-docker --quiet
+      - name: Docker Auth
+        run: gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev --quiet
 
-      - name: Push Docker Image to Container Registry (GCR)
-        env:
-          GIT_TAG: v0.1.0
-        run: |-
-          docker tag $IMAGE_NAME:latest gcr.io/$PROJECT_ID/$IMAGE_NAME:latest
-          docker tag $IMAGE_NAME:latest gcr.io/$PROJECT_ID/$IMAGE_NAME:$GIT_TAG
-          docker push gcr.io/$PROJECT_ID/$IMAGE_NAME:latest
-          docker push gcr.io/$PROJECT_ID/$IMAGE_NAME:$GIT_TAG
+      - name: Build & push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ env.IMAGE_TAG }}
