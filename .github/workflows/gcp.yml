@@ -8,7 +8,7 @@ jobs:
     name: Build and Push to GCP
     runs-on: ubuntu-latest
     env:
-      IMAGE_NAME: ant-app
+      IMAGE_NAME: ant
       PROJECT_ID: qualified-abode-471808-a8
     steps:
       - name: Checkout
