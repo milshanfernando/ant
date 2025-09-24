@@ -87,7 +87,7 @@ exports.getInvoicesByMonth = async (req, res, next) => {
     // Parse the given month
     const startDate = new Date(_month);
     const endDate = new Date(startDate);
-    endDate.setMonth(endDate.getMonth() + 1); // move to next month test
+    endDate.setMonth(endDate.getMonth() + 1); // move to next month
 
     const invoices = await Invoice.find({
       createdAt: { $gte: startDate, $lt: endDate },
