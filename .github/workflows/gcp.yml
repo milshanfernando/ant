@@ -38,12 +38,6 @@ jobs:
           project_id: ${{ env.PROJECT_ID }}
           export_default_credentials: true
 
-      - name: Verify GCloud Auth
-        run: |
-          gcloud auth list
-          gcloud config list
-          gcloud artifacts repositories list --project=${{ env.PROJECT_ID }} --location=${{ env.REGION }}
-
       # 4. Configure Docker for Artifact Registry
       - name: Configure Docker for Artifact Registry
         run: gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev --quiet
