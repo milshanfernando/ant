@@ -1,18 +1,20 @@
-name: Build and Push Image to Google Cloud Platform
+name: Build and Deploy to Google Cloud Run
 
 on:
   push:
     branches: [main]
 
 jobs:
-  build-push-gcr:
-    name: Build and Push to GCP
+  build-deploy:
     runs-on: ubuntu-latest
     env:
+      PROJECT_ID: ant-app-473121 # Your GCP project ID
       REGION: asia-southeast1
-      PROJECT: ant-app-473121
-      REPO: main # Make sure this is the exact Artifact Registry repository name
-      IMAGE: ant-app
+      APP_NAME: ant # Your app name
+      MEMORY: 2Gi
+      CPU: 2
+      IMAGE: ant-app # Docker image name
+      REPO: ant-repo # Artifact Registry repo name (must exist)
 
     steps:
       # 1. Checkout the repo
@@ -28,35 +30,41 @@ jobs:
           echo "PORT=${{ secrets.PORT }}" >> .env
           echo "MONGO_URL=${{ secrets.MONGO_URL }}" >> .env
 
-      # 3. Log in to DockerHub
-      - name: Log in to DockerHub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      # 4. Setup Google Cloud SDK
-      - uses: google-github-actions/setup-gcloud@v1
+      # 3. Setup Google Cloud SDK and authenticate
+      - name: Setup GCloud SDK
+        uses: google-github-actions/setup-gcloud@v1
         with:
           service_account_key: ${{ secrets.GC_IMAGE_MANAGER_KEY }}
-          project_id: ${{ env.PROJECT }}
+          project_id: ${{ env.PROJECT_ID }}
           export_default_credentials: true
+
+      # 4. Configure Docker for Artifact Registry
+      - name: Configure Docker for Artifact Registry
+        run: gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev --quiet
 
       # 5. Build Docker image
       - name: Build Docker Image
-        run: docker build -t $IMAGE:latest .
+        run: docker build -t ${{ env.IMAGE }}:latest .
 
-      # 6. Configure Docker for Artifact Registry
-      - name: Configure Docker Client for Artifact Registry
-        run: gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev --quiet
+      # 6. Tag Docker image for Artifact Registry
+      - name: Tag Docker Image
+        run: |
+          docker tag ${{ env.IMAGE }}:latest ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO }}/${{ env.IMAGE }}:latest
+          docker tag ${{ env.IMAGE }}:latest ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO }}/${{ env.IMAGE }}:v0.1.0
 
       # 7. Push Docker image to Artifact Registry
-      - name: Push Docker Image to Artifact Registry
-        env:
-          GIT_TAG: v0.1.0
+      - name: Push Docker Image
         run: |
-          docker tag $IMAGE:latest $REGION-docker.pkg.dev/$PROJECT/$REPO/$IMAGE:latest
-          docker tag $IMAGE:latest $REGION-docker.pkg.dev/$PROJECT/$REPO/$IMAGE:$GIT_TAG
+          docker push ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO }}/${{ env.IMAGE }}:latest
+          docker push ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO }}/${{ env.IMAGE }}:v0.1.0
 
-          docker push $REGION-docker.pkg.dev/$PROJECT/$REPO/$IMAGE:latest
-          docker push $REGION-docker.pkg.dev/$PROJECT/$REPO/$IMAGE:$GIT_TAG
+      # 8. Deploy to Cloud Run
+      - name: Deploy to Cloud Run
+        run: |
+          gcloud run deploy ${{ env.APP_NAME }} \
+            --image ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO }}/${{ env.IMAGE }}:latest \
+            --platform managed \
+            --region ${{ env.REGION }} \
+            --memory ${{ env.MEMORY }} \
+            --cpu ${{ env.CPU }} \
+            --allow-unauthenticated
