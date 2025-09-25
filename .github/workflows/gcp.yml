@@ -10,10 +10,10 @@ jobs:
     env:
       PROJECT_ID: ant-app-473121
       REGION: asia-southeast1
-      APP_NAME: ant
+      APP_NAME: ant-app
       MEMORY: 2Gi
       CPU: 2
-      IMAGE: ant-app
+      IMAGE: ant-app-image
       REPO: main
 
     steps:
