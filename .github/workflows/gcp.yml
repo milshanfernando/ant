@@ -56,17 +56,26 @@ jobs:
       - name: Build Docker Image
         run: docker build -t ${{ env.IMAGE }}:latest .
 
+      - name: Automatic Tagging of Releases
+        id: increment-git-tag
+        run: |
+          bash ./scripts/git_update.sh -v patch
+
       # Tag Docker image for Artifact Registry
       - name: Tag Docker Image
+        env:
+          GIT_TAG: ${{ steps.increment-git-tag.outputs.git-tag }}
         run: |
           docker tag ${{ env.IMAGE }}:latest ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO }}/${{ env.IMAGE }}:latest
-          docker tag ${{ env.IMAGE }}:latest ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO }}/${{ env.IMAGE }}:v0.1.0
+          docker tag ${{ env.IMAGE }}:latest ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO }}/${{ env.IMAGE }}:$GIT_TAG
 
       # Push Docker image
       - name: Push Docker Image
+        env:
+          GIT_TAG: ${{ steps.increment-git-tag.outputs.git-tag }}
         run: |
           docker push ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO }}/${{ env.IMAGE }}:latest
-          docker push ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO }}/${{ env.IMAGE }}:v0.1.0
+          docker push ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO }}/${{ env.IMAGE }}:$GIT_TAG
 
       # Deploy to Cloud Run
       - name: Deploy to Cloud Run
