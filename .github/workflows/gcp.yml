@@ -55,5 +55,8 @@ jobs:
         env:
           GIT_TAG: v0.1.0
         run: |
+          docker tag $IMAGE:latest $REGION-docker.pkg.dev/$PROJECT/$REPO/$IMAGE:latest
+          docker tag $IMAGE:latest $REGION-docker.pkg.dev/$PROJECT/$REPO/$IMAGE:$GIT_TAG
+
           docker push $REGION-docker.pkg.dev/$PROJECT/$REPO/$IMAGE:latest
           docker push $REGION-docker.pkg.dev/$PROJECT/$REPO/$IMAGE:$GIT_TAG
