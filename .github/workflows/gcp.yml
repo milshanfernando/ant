@@ -11,15 +11,15 @@ jobs:
     env:
       REGION: asia-southeast1
       PROJECT: ant-app-473121
-      REPO: main # Your Artifact Registry repo
+      REPO: main # Make sure this is the exact Artifact Registry repository name
       IMAGE: ant-app
 
     steps:
-      # 1. Checkout the repository
+      # 1. Checkout the repo
       - name: Checkout
         uses: actions/checkout@v3
 
-      # 2. Create .env file from GitHub secrets
+      # 2. Create .env file from secrets
       - name: Create .env file
         run: |
           echo "CLOUDINARY_CLOUD_NAME=${{ secrets.CLOUDINARY_CLOUD_NAME }}" >> .env
@@ -28,7 +28,7 @@ jobs:
           echo "PORT=${{ secrets.PORT }}" >> .env
           echo "MONGO_URL=${{ secrets.MONGO_URL }}" >> .env
 
-      # 3. Log in to DockerHub (optional)
+      # 3. Log in to DockerHub
       - name: Log in to DockerHub
         uses: docker/login-action@v2
         with:
@@ -36,29 +36,22 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       # 4. Setup Google Cloud SDK
-      - name: Setup GCloud
-        uses: google-github-actions/setup-gcloud@v1
+      - uses: google-github-actions/setup-gcloud@v1
         with:
           service_account_key: ${{ secrets.GC_IMAGE_MANAGER_KEY }}
           project_id: ${{ env.PROJECT }}
           export_default_credentials: true
 
-      # 5. Test Artifact Registry authentication
-      - name: Test Artifact Registry Auth
-        run: |
-          gcloud auth print-access-token
-          docker login -u oauth2accesstoken -p $(gcloud auth print-access-token) ${{ env.REGION }}-docker.pkg.dev
-
-      # 6. Build Docker image
+      # 5. Build Docker image
       - name: Build Docker Image
         run: docker build -t $IMAGE:latest .
 
-      # 7. Configure Docker to use Artifact Registry
-      - name: Configure Docker for Artifact Registry
+      # 6. Configure Docker for Artifact Registry
+      - name: Configure Docker Client for Artifact Registry
         run: gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev --quiet
 
-      # 8. Push Docker image to Artifact Registry
-      - name: Push Docker Image
+      # 7. Push Docker image to Artifact Registry
+      - name: Push Docker Image to Artifact Registry
         env:
           GIT_TAG: v0.1.0
         run: |
