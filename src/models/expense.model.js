@@ -15,6 +15,18 @@ const ExpenseSchema = new mongoose.Schema(
       type: Date,
       required: true,
     },
+
+    // ➕ New fields
+    propertyName: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    reportType: {
+      type: String,
+      enum: ["monthly", "project"],
+      required: true,
+    },
   },
   { timestamps: true }
 );

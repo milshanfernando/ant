@@ -15,6 +15,18 @@ const IncomeSchema = new mongoose.Schema(
       type: Date,
       required: true,
     },
+
+    // ➕ New Fields
+    propertyName: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    reportType: {
+      type: String,
+      enum: ["monthly", "project"],
+      required: true,
+    },
   },
   { timestamps: true }
 );
