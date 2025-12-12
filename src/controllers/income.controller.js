@@ -2,13 +2,13 @@ const Income = require("../models/income.model");
 
 exports.createIncome = async (req, res, next) => {
   try {
-    const { amount, note, date } = req.body;
+    const { amount, note, date, propertyName, reportType } = req.body;
 
     if (!amount || !date) {
       return res.status(400).json({ message: "Amount and date are required" });
     }
 
-    const income = new Income({ amount, note, date });
+    const income = new Income({ amount, note, date, propertyName, reportType });
     await income.save();
 
     res.status(201).json({ message: "Income added successfully", income });

@@ -2,13 +2,20 @@ const Expense = require("../models/expense.model");
 
 exports.createExpense = async (req, res, next) => {
   try {
-    const { amount, note, date } = req.body;
+    const { amount, note, date, propertyName, reportType } = req.body;
 
     if (!amount || !date) {
       return res.status(400).json({ message: "Amount and date are required" });
     }
 
-    const expense = new Expense({ amount, note, date });
+    const expense = new Expense({
+      amount,
+      note,
+      date,
+      propertyName,
+      reportType,
+    });
+
     await expense.save();
 
     res.status(201).json({ message: "Expense added successfully", expense });
