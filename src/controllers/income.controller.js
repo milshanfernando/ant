@@ -66,31 +66,51 @@ exports.getIncomeByMonth = async (req, res, next) => {
 
 exports.getIncome = async (req, res, next) => {
   try {
-    const { month, startMonth, endMonth, propertyName, reportType } = req.query;
+    const {
+      date, // 👈 daily (YYYY-MM-DD)
+      month,
+      startMonth,
+      endMonth,
+      propertyName,
+      reportType,
+    } = req.query;
 
     const filter = {};
 
     /* ----------------------------
-       Report type filter
+       Report type
     ----------------------------- */
     if (reportType) {
       filter.reportType = reportType;
     }
 
     /* ----------------------------
-       Property filter (multiple)
+       Property (multiple)
     ----------------------------- */
     if (propertyName) {
-      const properties = propertyName.split(","); // "A,B,C" → ["A","B","C"]
-      filter.propertyName = { $in: properties };
+      filter.propertyName = {
+        $in: propertyName.split(","),
+      };
     }
 
     /* ----------------------------
-       Date filtering
+       Date filtering (priority based)
     ----------------------------- */
 
-    // 1️⃣ Monthly report (from <input type="month">)
-    if (month) {
+    // 1️⃣ DAILY
+    if (date) {
+      const startDate = new Date(date);
+      const endDate = new Date(startDate);
+      endDate.setDate(endDate.getDate() + 1);
+
+      filter.date = {
+        $gte: startDate,
+        $lt: endDate,
+      };
+    }
+
+    // 2️⃣ MONTHLY
+    else if (month) {
       const startDate = new Date(`${month}-01`);
       const endDate = new Date(startDate);
       endDate.setMonth(endDate.getMonth() + 1);
@@ -101,8 +121,8 @@ exports.getIncome = async (req, res, next) => {
       };
     }
 
-    // 2️⃣ Project / custom range
-    if (startMonth && endMonth) {
+    // 3️⃣ PROJECT / RANGE
+    else if (startMonth && endMonth) {
       const startDate = new Date(`${startMonth}-01`);
       const endDate = new Date(`${endMonth}-01`);
       endDate.setMonth(endDate.getMonth() + 1);
@@ -120,6 +140,63 @@ exports.getIncome = async (req, res, next) => {
     next(error);
   }
 };
+
+// exports.getIncome = async (req, res, next) => {
+//   try {
+//     const { month, startMonth, endMonth, propertyName, reportType } = req.query;
+
+//     const filter = {};
+
+//     /* ----------------------------
+//        Report type filter
+//     ----------------------------- */
+//     if (reportType) {
+//       filter.reportType = reportType;
+//     }
+
+//     /* ----------------------------
+//        Property filter (multiple)
+//     ----------------------------- */
+//     if (propertyName) {
+//       const properties = propertyName.split(","); // "A,B,C" → ["A","B","C"]
+//       filter.propertyName = { $in: properties };
+//     }
+
+//     /* ----------------------------
+//        Date filtering
+//     ----------------------------- */
+
+//     // 1️⃣ Monthly report (from <input type="month">)
+//     if (month) {
+//       const startDate = new Date(`${month}-01`);
+//       const endDate = new Date(startDate);
+//       endDate.setMonth(endDate.getMonth() + 1);
+
+//       filter.date = {
+//         $gte: startDate,
+//         $lt: endDate,
+//       };
+//     }
+
+//     // 2️⃣ Project / custom range
+//     if (startMonth && endMonth) {
+//       const startDate = new Date(`${startMonth}-01`);
+//       const endDate = new Date(`${endMonth}-01`);
+//       endDate.setMonth(endDate.getMonth() + 1);
+
+//       filter.date = {
+//         $gte: startDate,
+//         $lt: endDate,
+//       };
+//     }
+
+//     const income = await Income.find(filter).sort({ date: -1 });
+
+//     res.json(income);
+//   } catch (error) {
+//     next(error);
+//   }
+// };
 
 exports.getIncomeById = async (req, res, next) => {
   try {
