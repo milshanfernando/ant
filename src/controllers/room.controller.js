@@ -2,7 +2,7 @@ const Room = require("../models/room.model");
 
 exports.createRoom = async (req, res) => {
   try {
-    const RoomNo = req.body.RoomNo?.trim();
+    const RoomNo = req.body.RoomNo;
 
     if (!RoomNo) {
       return res.status(400).json({ message: "RoomNo is required" });
