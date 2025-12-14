@@ -1,28 +1,41 @@
 const mongoose = require("mongoose");
 
-const RoomSchema = new mongoose.Schema(
+const roomSchema = new mongoose.Schema(
   {
-    RoomNo: { type: String, required: true },
-    allocationList: [
+    name: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    status: {
+      type: String,
+      enum: ["available", "occupied", "maintenance"],
+      default: "available",
+    },
+    allocatedGuests: [
       {
-        guestName: String,
-        checkIn: Date,
-        checkOut: Date,
+        name: {
+          type: String,
+          required: true,
+        },
+        checkIn: {
+          type: Date,
+          required: true,
+        },
+        checkOut: {
+          type: Date,
+          required: true,
+        },
+        bookingId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Booking",
+        },
       },
     ],
-    active: { type: Boolean, default: true },
-    lastUpdated: {
-      type: Date,
-      default: Date.now,
-    },
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+  }
 );
 
-// Case-insensitive unique index
-RoomSchema.index(
-  { RoomNo: 1 },
-  { unique: true, collation: { locale: "en", strength: 2 } }
-);
-
-module.exports = mongoose.model("Room", RoomSchema);
+module.exports = mongoose.model("Room", roomSchema);

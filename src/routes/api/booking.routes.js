@@ -1,11 +1,19 @@
 const express = require("express");
 const router = express.Router();
-const bookingController = require("../../controllers/booking.controller");
+const {
+  createBooking,
+  getBookings,
+  getBooking,
+  updateBooking,
+  deleteBooking,
+  assignGuestToRoom,
+} = require("../../controllers/booking.controller");
 
-// Create booking
-router.post("/create", bookingController.createBooking);
-
-// Allocate room for a booking
-router.post("/:id/allocate", bookingController.allocateRoom);
+router.post("/", createBooking);
+router.get("/", getBookings);
+router.get("/:id", getBooking);
+router.put("/:id", updateBooking);
+router.delete("/:id", deleteBooking);
+router.post("/:id/assign-room", assignGuestToRoom);
 
 module.exports = router;
