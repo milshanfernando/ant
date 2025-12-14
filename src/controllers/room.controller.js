@@ -1,7 +1,4 @@
 const Room = require("../models/room.model");
-const Booking = require("../models/booking.model");
-
-const Room = require("../models/room.model");
 
 // 1. Create a single room
 exports.createRoom = async (req, res) => {
