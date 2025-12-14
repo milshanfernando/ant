@@ -1,8 +1,14 @@
 const mongoose = require("mongoose");
 
 const RoomSchema = new mongoose.Schema({
-  roomNo: { type: String, unique: true },
-  roomType: { type: String, enum: ["SINGLE", "DOUBLE", "FAMILY"] },
+  RoomNo: { type: String, required: true, unique: true },
+  allocationList: [
+    {
+      guestName: String,
+      checkIn: Date,
+      checkOut: Date,
+    },
+  ],
   active: { type: Boolean, default: true },
 });
 

@@ -9,6 +9,7 @@ const invoiceRouter = require("./invoice.route");
 const incomeRouter = require("./income.routes");
 const expenseRouter = require("./expense.routes");
 const roomRouter = require("./room.routes");
+const bookingRouter = require("./booking.routes");
 // const roomRouter = require("./room.route");
 
 // Attach routes
@@ -17,6 +18,7 @@ router.use("/invoices", invoiceRouter);
 router.use("/income", incomeRouter);
 router.use("/expenses", expenseRouter);
 router.use("/rooms", roomRouter);
+router.use("/bookings", bookingRouter);
 // router.use("/rooms", roomRouter);
 
 module.exports = router;

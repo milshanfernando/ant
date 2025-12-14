@@ -1,143 +1,104 @@
 const Booking = require("../models/booking.model");
 const Room = require("../models/room.model");
 
-/**
- * CREATE BOOKING
- * Can be past, today or future
- * Room is optional
- */
+// Helper: check if two periods overlap
+const isOverlapping = (start1, end1, start2, end2) => {
+  return !(end1 <= start2 || start1 >= end2);
+};
+
+// 1. Create a booking
 exports.createBooking = async (req, res) => {
   try {
     const {
       guestName,
-      phoneNumber,
       bookingThrough,
       checkIn,
       checkOut,
+      status,
+      date,
       amount,
-      referenceNo,
+      refTmg,
+      phoneNumber,
     } = req.body;
 
-    if (!guestName || !checkIn || !checkOut) {
-      return res.status(400).json({
-        message: "Guest name, check-in and check-out are required",
-      });
-    }
-
-    const booking = await Booking.create({
+    const newBooking = new Booking({
       guestName,
-      phoneNumber,
       bookingThrough,
       checkIn,
       checkOut,
+      status,
+      date,
       amount,
-      referenceNo,
-      status: "PENDING",
+      refTmg,
+      phoneNumber,
+      assignRoom: null,
+      allocatedRoom: false,
     });
 
-    res.status(201).json(booking);
-  } catch (error) {
-    console.error("Create booking error:", error);
-    res.status(500).json({ message: "Failed to create booking" });
+    await newBooking.save();
+
+    res.status(201).json({ message: "Booking created", booking: newBooking });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
   }
 };
 
-/**
- * GET ALL BOOKINGS
- */
-exports.getBookings = async (req, res) => {
-  try {
-    const bookings = await Booking.find()
-      .populate("assignedRoom")
-      .sort({ checkIn: 1 });
-
-    res.json(bookings);
-  } catch (error) {
-    res.status(500).json({ message: "Failed to fetch bookings" });
-  }
-};
-
-/**
- * ALLOCATE ROOM TO BOOKING
- */
+// 2. Allocate room for a booking
 exports.allocateRoom = async (req, res) => {
   try {
-    const { bookingId, roomId } = req.body;
+    const bookingId = req.params.id;
+    const booking = await Booking.findById(bookingId);
 
-    if (!bookingId || !roomId) {
+    if (!booking) {
+      return res.status(404).json({ message: "Booking not found" });
+    }
+
+    if (booking.allocatedRoom) {
+      return res.status(400).json({ message: "Room already allocated" });
+    }
+
+    const rooms = await Room.find({ active: true });
+    let allocated = false;
+
+    for (let room of rooms) {
+      const isAvailable = room.allocationList.every(
+        (item) =>
+          !isOverlapping(
+            new Date(booking.checkIn),
+            new Date(booking.checkOut),
+            new Date(item.checkIn),
+            new Date(item.checkOut)
+          )
+      );
+
+      if (isAvailable) {
+        room.allocationList.push({
+          guestName: booking.guestName,
+          checkIn: booking.checkIn,
+          checkOut: booking.checkOut,
+        });
+
+        await room.save();
+
+        booking.assignRoom = room.RoomNo;
+        booking.allocatedRoom = true;
+        await booking.save();
+
+        allocated = true;
+        break;
+      }
+    }
+
+    if (!allocated) {
       return res
         .status(400)
-        .json({ message: "Booking ID and Room ID are required" });
+        .json({ message: "No rooms available for this period." });
     }
 
-    const booking = await Booking.findById(bookingId);
-    if (!booking) {
-      return res.status(404).json({ message: "Booking not found" });
-    }
-
-    // Prevent double booking
-    const conflict = await Booking.findOne({
-      assignedRoom: roomId,
-      status: { $in: ["ALLOCATED", "CHECKED_IN"] },
-      checkIn: { $lt: booking.checkOut },
-      checkOut: { $gt: booking.checkIn },
-    });
-
-    if (conflict) {
-      return res.status(400).json({
-        message: "Room already allocated for selected dates",
-      });
-    }
-
-    booking.assignedRoom = roomId;
-    booking.status = "ALLOCATED";
-    await booking.save();
-
-    res.json({ message: "Room allocated successfully" });
-  } catch (error) {
-    console.error("Allocate room error:", error);
-    res.status(500).json({ message: "Failed to allocate room" });
-  }
-};
-
-/**
- * CHECK-IN
- */
-exports.checkIn = async (req, res) => {
-  try {
-    const { bookingId } = req.params;
-
-    const booking = await Booking.findById(bookingId);
-    if (!booking) {
-      return res.status(404).json({ message: "Booking not found" });
-    }
-
-    booking.status = "CHECKED_IN";
-    await booking.save();
-
-    res.json({ message: "Guest checked in" });
-  } catch (error) {
-    res.status(500).json({ message: "Check-in failed" });
-  }
-};
-
-/**
- * CHECK-OUT
- */
-exports.checkOut = async (req, res) => {
-  try {
-    const { bookingId } = req.params;
-
-    const booking = await Booking.findById(bookingId);
-    if (!booking) {
-      return res.status(404).json({ message: "Booking not found" });
-    }
-
-    booking.status = "CHECKED_OUT";
-    await booking.save();
-
-    res.json({ message: "Guest checked out" });
-  } catch (error) {
-    res.status(500).json({ message: "Check-out failed" });
+    res.status(200).json({ message: "Room allocated successfully", booking });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
   }
 };
