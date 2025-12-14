@@ -7,10 +7,12 @@ exports.createRoom = async (req, res) => {
       return res.status(400).json({ message: "RoomNo is required" });
     }
 
-    // Case-insensitive check
-    const existingRoom = await Room.findOne({
-      RoomNo: { $regex: `^${RoomNo}$`, $options: "i" },
+    // Case-insensitive check using collation
+    const existingRoom = await Room.findOne({ RoomNo }).collation({
+      locale: "en",
+      strength: 2,
     });
+
     if (existingRoom) {
       return res.status(400).json({ message: "Room already exists" });
     }
