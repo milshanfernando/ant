@@ -1,23 +1,33 @@
 const Room = require("../models/room.model");
 
-// 1. Create a single room
 exports.createRoom = async (req, res) => {
   try {
-    const { RoomNo } = req.body;
-
+    // Trim input and validate
+    const RoomNo = req.body.RoomNo?.trim();
     if (!RoomNo) {
       return res.status(400).json({ message: "RoomNo is required" });
     }
 
+    // Check if room already exists
     const existingRoom = await Room.findOne({ RoomNo });
     if (existingRoom) {
       return res.status(400).json({ message: "Room already exists" });
     }
 
+    // Create new room
     const newRoom = new Room({ RoomNo, allocationList: [] });
-    await newRoom.save();
 
-    res.status(201).json({ message: "Room created", room: newRoom });
+    try {
+      await newRoom.save();
+      res.status(201).json({ message: "Room created", room: newRoom });
+    } catch (saveError) {
+      console.error(saveError);
+      // Handle duplicate key error (in case of race conditions)
+      if (saveError.code === 11000) {
+        return res.status(400).json({ message: "Room already exists" });
+      }
+      res.status(500).json({ message: "Server error" });
+    }
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error" });
