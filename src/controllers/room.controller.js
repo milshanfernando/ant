@@ -8,15 +8,15 @@ exports.createRoom = async (req, res) => {
       return res.status(400).json({ message: "RoomNo is required" });
     }
 
-    // Case-insensitive check using collation
-    const existingRoom = await Room.findOne({ RoomNo }).collation({
-      locale: "en",
-      strength: 2,
-    });
+    // // Case-insensitive check using collation
+    // const existingRoom = await Room.findOne({ RoomNo }).collation({
+    //   locale: "en",
+    //   strength: 2,
+    // });
 
-    if (existingRoom) {
-      return res.status(400).json({ message: "Room already exists" });
-    }
+    // if (existingRoom) {
+    //   return res.status(400).json({ message: "Room already exists" });
+    // }
 
     const newRoom = new Room({ RoomNo, allocationList: [] });
     await newRoom.save();
