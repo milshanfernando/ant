@@ -8,6 +8,7 @@ const invoiceRouter = require("./invoice.route");
 // New routes you wanted (same structure)
 const incomeRouter = require("./income.routes");
 const expenseRouter = require("./expense.routes");
+const roomRouter = require("./room.routes");
 // const roomRouter = require("./room.route");
 
 // Attach routes
@@ -15,6 +16,7 @@ router.use("/items", itemRouter);
 router.use("/invoices", invoiceRouter);
 router.use("/income", incomeRouter);
 router.use("/expenses", expenseRouter);
+router.use("/rooms", roomRouter);
 // router.use("/rooms", roomRouter);
 
 module.exports = router;
