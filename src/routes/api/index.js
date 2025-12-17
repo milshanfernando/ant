@@ -10,6 +10,7 @@ const incomeRouter = require("./income.routes");
 const expenseRouter = require("./expense.routes");
 const roomRouter = require("./room.routes");
 const reservationRouter = require("./reservation.routes");
+const operationalCost = require("./operationalCost.routes");
 // const roomRouter = require("./room.route");
 
 // Attach routes
@@ -19,6 +20,8 @@ router.use("/income", incomeRouter);
 router.use("/expenses", expenseRouter);
 router.use("/rooms", roomRouter);
 router.use("/reservations", reservationRouter);
+router.use("/operational-costs", operationalCost);
+
 // router.use("/rooms", roomRouter);
 
 module.exports = router;
