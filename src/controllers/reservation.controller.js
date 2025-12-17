@@ -48,6 +48,28 @@ exports.getByPaymentDate = async (req, res) => {
   res.json(data);
 };
 
+exports.getPendingPayments = async (req, res) => {
+  try {
+    const { propertyName } = req.query;
+
+    if (!propertyName) {
+      return res.status(400).json({
+        message: "propertyName is required",
+      });
+    }
+
+    const reservations = await Reservation.find({
+      propertyName,
+      paymentStatus: "pending",
+      status: { $ne: "cancelled" },
+    }).sort({ checkInDate: 1 });
+
+    res.json(reservations);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 exports.getByCheckInDate = async (req, res) => {
   const data = await Reservation.find({
     propertyName: req.query.propertyName,

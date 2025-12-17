@@ -11,6 +11,7 @@ router.patch("/:id/check-in", ctrl.checkInReservation);
 
 router.get("/property", ctrl.getByProperty);
 router.get("/payment-date", ctrl.getByPaymentDate);
+router.get("/payments-pending", ctrl.getPendingPayments);
 router.get("/checkin-date", ctrl.getByCheckInDate);
 router.get("/checkout-date", ctrl.getByCheckOutDate);
 router.get("/today-room", ctrl.getTodayByRoom);
