@@ -1,19 +1,10 @@
 const express = require("express");
 const router = express.Router();
-const {
-  createRoom,
-  getRooms,
-  getRoom,
-  updateRoom,
-  deleteRoom,
-  getAvailableRooms,
-} = require("../../controllers/room.controller");
+const ctrl = require("../../controllers/room.controller");
 
-router.post("/", createRoom);
-router.get("/", getRooms);
-router.get("/available", getAvailableRooms);
-router.get("/:id", getRoom);
-router.put("/:id", updateRoom);
-router.delete("/:id", deleteRoom);
+router.post("/", ctrl.createRoom);
+router.put("/:id", ctrl.updateRoom);
+router.patch("/:id/status", ctrl.updateRoomStatus);
+router.get("/", ctrl.getRoomsByProperty);
 
 module.exports = router;
