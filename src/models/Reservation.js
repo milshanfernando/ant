@@ -1,3 +1,4 @@
+const { number } = require("joi");
 const mongoose = require("mongoose");
 
 const ReservationSchema = new mongoose.Schema(
@@ -24,6 +25,7 @@ const ReservationSchema = new mongoose.Schema(
     propertyName: { type: String, required: true },
     room: String,
     refImage: String,
+    amount: Number,
   },
   { timestamps: true }
 );

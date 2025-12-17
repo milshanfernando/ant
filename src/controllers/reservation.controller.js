@@ -11,6 +11,7 @@ exports.updatePayment = async (req, res) => {
     {
       paymentStatus: req.body.paymentStatus,
       paymentDate: req.body.paymentDate || new Date(),
+      amount: req.body.amount,
     },
     { new: true }
   );
