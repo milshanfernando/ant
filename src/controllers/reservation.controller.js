@@ -130,3 +130,32 @@ exports.checkInReservation = async (req, res) => {
 
   res.json(reservation);
 };
+
+exports.getActiveByDate = async (req, res) => {
+  try {
+    const { propertyName, date } = req.query;
+
+    if (!propertyName || !date) {
+      return res.status(400).json({
+        message: "propertyName and date are required",
+      });
+    }
+
+    const start = new Date(date);
+    start.setHours(0, 0, 0, 0);
+
+    const end = new Date(date);
+    end.setHours(23, 59, 59, 999);
+
+    const reservations = await Reservation.find({
+      propertyName,
+      checkInDate: { $lte: end },
+      checkOutDate: { $gte: start },
+      status: { $in: ["booked", "checked-in"] },
+    });
+
+    res.json(reservations);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
