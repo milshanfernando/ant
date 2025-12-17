@@ -1,5 +1,5 @@
 const Reservation = require("../models/Reservation");
-const OperationalCost = require("../models/OperationalCost");
+const OperationalCost = require("../models/operationalCost.model");
 
 exports.getProfitReport = async (req, res) => {
   const { propertyName, date, month } = req.query;
