@@ -3,11 +3,11 @@ const mongoose = require("mongoose");
 
 const operationalCostSchema = new mongoose.Schema(
   {
-    propertyName: {
-      type: String,
-      required: true,
-      index: true,
-    },
+    // propertyName: {
+    //   type: String,
+    //   required: true,
+    //   index: true,
+    // },
 
     amount: {
       type: Number,

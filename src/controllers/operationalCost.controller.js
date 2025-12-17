@@ -13,7 +13,7 @@ exports.createCost = async (req, res) => {
     }
 
     const cost = await OperationalCost.create({
-      propertyName,
+      //   propertyName,
       amount,
       category,
       description,
@@ -31,13 +31,13 @@ exports.getCosts = async (req, res) => {
   try {
     const { propertyName, date, month } = req.query;
 
-    if (!propertyName) {
-      return res.status(400).json({
-        message: "propertyName is required",
-      });
-    }
+    // if (!propertyName) {
+    //   return res.status(400).json({
+    //     message: "propertyName is required",
+    //   });
+    // }
 
-    let filter = { propertyName };
+    let filter = {};
 
     // DAILY
     if (date) {
@@ -70,11 +70,11 @@ exports.getCosts = async (req, res) => {
 /* ================= MONTHLY SUMMARY ================= */
 exports.getCostSummary = async (req, res) => {
   try {
-    const { propertyName, month } = req.query;
+    const { month } = req.query;
 
-    if (!propertyName || !month) {
+    if (!month) {
       return res.status(400).json({
-        message: "propertyName and month are required",
+        message: "month are required",
       });
     }
 
@@ -85,7 +85,6 @@ exports.getCostSummary = async (req, res) => {
     const summary = await OperationalCost.aggregate([
       {
         $match: {
-          propertyName,
           costDate: { $gte: start, $lt: end },
         },
       },
