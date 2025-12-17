@@ -10,7 +10,11 @@ const ReservationSchema = new mongoose.Schema(
     checkOutDate: { type: Date, required: true },
     checkInTime: String,
     checkOutTime: String,
-    paymentStatus: { type: String, enum: ["pending", "paid"], default: "pending" },
+    paymentStatus: {
+      type: String,
+      enum: ["pending", "paid"],
+      default: "pending",
+    },
     paymentDate: Date,
     status: {
       type: String,
@@ -18,7 +22,7 @@ const ReservationSchema = new mongoose.Schema(
       default: "booked",
     },
     propertyName: { type: String, required: true },
-    room: { type: String, required: true },
+    room: String,
     refImage: String,
   },
   { timestamps: true }
