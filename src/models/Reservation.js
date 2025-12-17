@@ -26,6 +26,7 @@ const ReservationSchema = new mongoose.Schema(
     room: String,
     refImage: String,
     amount: Number,
+    bookingPlatform: String,
   },
   { timestamps: true }
 );
