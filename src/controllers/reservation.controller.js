@@ -86,3 +86,24 @@ exports.getTodayByRoomAndStatus = async (req, res) => {
   });
   res.json(data);
 };
+
+exports.checkInReservation = async (req, res) => {
+  const { room } = req.body;
+
+  const reservation = await Reservation.findByIdAndUpdate(
+    req.params.id,
+    {
+      status: "checked-in",
+      room,
+      checkInTime: new Date().toLocaleTimeString(),
+    },
+    { new: true }
+  );
+
+  await Room.findOneAndUpdate(
+    { room, propertyName: reservation.propertyName },
+    { status: "occupied" }
+  );
+
+  res.json(reservation);
+};

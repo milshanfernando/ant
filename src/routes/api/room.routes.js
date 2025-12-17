@@ -6,5 +6,6 @@ router.post("/", ctrl.createRoom);
 router.put("/:id", ctrl.updateRoom);
 router.patch("/:id/status", ctrl.updateRoomStatus);
 router.get("/", ctrl.getRoomsByProperty);
+router.get("/available", ctrl.getAvailableRooms);
 
 module.exports = router;
