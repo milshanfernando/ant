@@ -150,8 +150,8 @@ exports.getActiveByDate = async (req, res) => {
     const reservations = await Reservation.find({
       propertyName,
       checkInDate: { $lte: end },
-      checkOutDate: { $gte: start },
-      status: { $in: ["booked", "checked-in"] },
+      checkOutDate: { $gt: start },
+      status: { $in: ["booked", "checked-in", "checked-out"] },
     });
 
     res.json(reservations);
