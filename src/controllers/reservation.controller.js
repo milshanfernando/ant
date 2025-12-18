@@ -61,7 +61,7 @@ exports.getPendingPayments = async (req, res) => {
 
     const reservations = await Reservation.find({
       propertyName,
-      paymentStatus: "paid",
+      paymentStatus: "pending",
       status: { $ne: "cancelled" },
     }).sort({ checkInDate: 1 });
 
