@@ -2,10 +2,10 @@ const Reservation = require("../models/Reservation");
 const OperationalCost = require("../models/operationalCost.model");
 
 exports.getProfitReport = async (req, res) => {
-  const { propertyName, date, month } = req.query;
+  const { date, month } = req.query;
 
-  if (!propertyName)
-    return res.status(400).json({ message: "propertyName required" });
+  // if (!propertyName)
+  //   return res.status(400).json({ message: "propertyName required" });
 
   let start, end;
 
@@ -21,7 +21,6 @@ exports.getProfitReport = async (req, res) => {
 
   /* ================= INCOME ================= */
   const income = await Reservation.find({
-    propertyName,
     paymentStatus: "paid",
     paymentDate: { $gte: start, $lte: end },
   });
@@ -30,7 +29,6 @@ exports.getProfitReport = async (req, res) => {
 
   /* ================= EXPENSES ================= */
   const expenses = await OperationalCost.find({
-    propertyName,
     costDate: { $gte: start, $lte: end },
   });
 
