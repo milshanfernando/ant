@@ -22,7 +22,7 @@ router.use("/expenses", expenseRouter);
 router.use("/rooms", roomRouter);
 router.use("/reservations", reservationRouter);
 router.use("/operational-costs", operationalCost);
-router.use("/profit", profitRouter);
+// router.use("/profit", profitRouter);
 
 // router.use("/rooms", roomRouter);
 

@@ -1,6 +1,6 @@
-const router = require("express").Router();
-const profitCtrl = require("../../controllers/profit.controller");
+// const router = require("express").Router();
+// const profitCtrl = require("../../controllers/profit.controller");
 
-router.get("/", profitCtrl.getProfitReport);
+// router.get("/", profitCtrl.getProfitReport);
 
-module.exports = router;
+// module.exports = router;
