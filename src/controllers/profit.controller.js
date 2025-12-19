@@ -25,7 +25,7 @@ exports.getProfitReport = async (req, res) => {
     /* ================= DIRECT INCOME (RESERVATIONS) ================= */
     const directIncomeList = await Reservation.find({
       paymentStatus: "paid",
-      paymentType: "direct", // 👈 IMPORTANT
+      bookingPlatform: "direct", // 👈 IMPORTANT
       paymentDate: { $gte: start, $lte: end },
     });
 
