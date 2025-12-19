@@ -7,25 +7,28 @@ const IncomeSchema = new mongoose.Schema(
       required: true,
       min: 0,
     },
-    note: {
+
+    bookingPlatform: {
       type: String,
-      trim: true,
+      required: true,
+      trim: true, // e.g. Booking.com, Airbnb, Walk-in
     },
+
     date: {
       type: Date,
       required: true,
     },
 
-    // ➕ New Fields
     propertyName: {
       type: String,
       required: true,
       trim: true,
     },
-    reportType: {
+
+    note: {
       type: String,
-      enum: ["monthly", "project"],
-      required: true,
+      trim: true,
+      default: "",
     },
   },
   { timestamps: true }
